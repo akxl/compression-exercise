@@ -1,6 +1,6 @@
 package compression
 
-import java.util.*
+import java.lang.StringBuilder
 import kotlin.Comparator
 
 // https://cs.stanford.edu/people/eroberts/courses/soco/projects/data-compression/lossless/huffman/index.htm
@@ -103,4 +103,14 @@ private fun assignCompressedString(node: Node, workingCompressedString: String, 
     node.left?.let { assignCompressedString(it, newWorkingCompressedString, true) }
     node.right?.let { assignCompressedString(it, newWorkingCompressedString, false) }
 
+}
+
+fun decompress(compressed: List<Compressed>, compressedToRaw: Map<Compressed, Raw>): Raw {
+    val stringBuilder = StringBuilder()
+    val op: (StringBuilder, Raw) -> StringBuilder = {sb, r -> sb.append(r.string)}
+    return compressed
+        .map { compressedToRaw[it]!! }
+        .fold(stringBuilder, op)
+        .toString()
+        .let { Raw(it) }
 }
